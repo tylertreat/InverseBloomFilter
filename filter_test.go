@@ -1,6 +1,9 @@
 package filter
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+)
 
 func TestTheBasics(t *testing.T) {
 	f, _ := NewInverseBloomFilter(2)
@@ -56,6 +59,13 @@ func TestTooSmallSize(t *testing.T) {
 	}
 	if f != nil {
 		t.Errorf("did not return nil on a too small filter size")
+	}
+}
+
+func BenchmarkObserve(b *testing.B) {
+	f, _ := NewInverseBloomFilter(100000)
+	for n := 0; n < b.N; n++ {
+		f.Observe([]byte(strconv.Itoa(n)))
 	}
 }
 
