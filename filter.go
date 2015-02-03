@@ -24,10 +24,12 @@ import (
 )
 
 var (
-	// ErrSizeTooLarge is returned by NewSet when the specified size is too large to allocate.
+	// ErrSizeTooLarge is returned by NewSet when the specified size is too
+	// large to allocate.
 	ErrSizeTooLarge = errors.New("Size given too large to round to a power of 2")
 
-	// ErrSizeTooSmall is returned by NewSet when the specified size is less than or equal to zero.
+	// ErrSizeTooSmall is returned by NewSet when the specified size is less
+	// than or equal to zero.
 	ErrSizeTooSmall = errors.New("Cannot have a zero or negative size")
 
 	// MaxSize indicates the largest possible filter size.
