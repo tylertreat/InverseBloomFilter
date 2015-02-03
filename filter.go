@@ -68,7 +68,7 @@ func NewInverseBloomFilter(size int) (*InverseBloomFilter, error) {
 // That is, it may return false even though the key was previously observed,
 // but it will never return true for a key that has never been observed.
 func (i *InverseBloomFilter) Observe(key []byte) bool {
-	h := md5UintHash{fnv.New32a()}
+	h := uintHash{fnv.New32a()}
 	h.Write(key)
 	uindex := h.Sum32() & i.sizeMask
 	oldId := getAndSet(i.array, int32(uindex), key)
@@ -80,12 +80,12 @@ func (i *InverseBloomFilter) Size() int {
 	return len(i.array)
 }
 
-type md5UintHash struct {
-	hash.Hash // a hack with knowledge of how md5 works
+type uintHash struct {
+	hash.Hash
 }
 
-func (m md5UintHash) Sum32() uint32 {
-	sum := m.Sum(nil)
+func (u uintHash) Sum32() uint32 {
+	sum := u.Sum(nil)
 	x := uint32(sum[0])
 	for _, val := range sum[1:3] {
 		x = x << 3
