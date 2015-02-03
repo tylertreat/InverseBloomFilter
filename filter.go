@@ -42,6 +42,7 @@ var (
 type InverseBloomFilter struct {
 	array    []*[]byte
 	sizeMask uint32
+	hash     *uintHash
 }
 
 // NewInverseBloomFilter creates and returns a new InverseBloomFilter with the
@@ -59,7 +60,7 @@ func NewInverseBloomFilter(size int) (*InverseBloomFilter, error) {
 	size = int(math.Pow(2, math.Ceil(math.Log2(float64(size)))))
 	slice := make([]*[]byte, size)
 	sizeMask := uint32(size - 1)
-	return &InverseBloomFilter{slice, sizeMask}, nil
+	return &InverseBloomFilter{slice, sizeMask, &uintHash{fnv.New32a()}}, nil
 }
 
 // Observe marks a key as observed. It returns true if the key has been
@@ -68,9 +69,9 @@ func NewInverseBloomFilter(size int) (*InverseBloomFilter, error) {
 // That is, it may return false even though the key was previously observed,
 // but it will never return true for a key that has never been observed.
 func (i *InverseBloomFilter) Observe(key []byte) bool {
-	h := uintHash{fnv.New32a()}
-	h.Write(key)
-	uindex := h.Sum32() & i.sizeMask
+	i.hash.Write(key)
+	uindex := i.hash.Sum32() & i.sizeMask
+	i.hash.Reset()
 	oldId := getAndSet(i.array, int32(uindex), key)
 	return bytes.Equal(oldId, key)
 }
